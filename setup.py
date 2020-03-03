@@ -2,6 +2,7 @@
 
 """The setup script."""
 
+import re
 from setuptools import setup, find_packages
 
 with open('README.rst') as readme_file:
@@ -15,6 +16,15 @@ requirements = ['pandas', 'numpy', 'plotly']
 setup_requirements = ['pandas', 'numpy', 'plotly']
 
 test_requirements = ['pandas', 'numpy', 'plotly']
+
+VERSIONFILE = "viewclust/_version.py"
+VERSTRLINE = open(VERSIONFILE, "rt").read()
+VSRE = r"^__version__ = ['\"]([^'\"]*)['\"]"
+MO = re.search(VSRE, VERSTRLINE, re.M)
+if MO:
+    VERSTR = MO.group(1)
+else:
+    raise RuntimeError("Unable to find version string in %s." % (VERSIONFILE,))
 
 setup(
     author="Tyler Collins",
@@ -40,7 +50,7 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/Andesha/viewclust',
-    version='0.1.2',
+    version=VERSTR,
     zip_safe=False,
 )
  

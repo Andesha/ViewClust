@@ -1,3 +1,6 @@
+# Version output
+from ._version import __version__
+
 # High level functions
 from .job_stack import job_stack
 from .job_use import job_use
