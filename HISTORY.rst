@@ -2,7 +2,7 @@
 History
 =======
 
-0.1.3 (2020-03-11)
+0.1.4 (2020-03-11)
 ------------------
 
 * Overhauled the documentation usage section
