@@ -31,7 +31,7 @@ import viewclust
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon', 'sphinx.ext.viewcode']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -158,5 +158,21 @@ texinfo_documents = [
      'Miscellaneous'),
 ]
 
+# Extra stuff for backend doc generation
 
+def run_apidoc(_):
+    from sphinx.apidoc import main
+    parentFolder = os.path.join(os.path.dirname(__file__), '..')
+    cur_dir = os.path.abspath(os.path.dirname(__file__))
+    sys.path.append(parentFolder)
+    # change "backend" to your module name
+    module = os.path.join(parentFolder,'viewclust')
+    output_path = os.path.join(cur_dir, 'api')
+    # print(output_path)
+    main(['-e','-f','-o', output_path, module])
 
+def setup(app):
+    # overrides for wide tables in RTD theme
+    app.add_stylesheet('theme_overrides.css')
+    # trigger the run_apidoc
+    app.connect('builder-inited', run_apidoc)

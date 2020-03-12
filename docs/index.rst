@@ -12,6 +12,7 @@ Welcome to ViewClust's documentation!
    contributing
    authors
    history
+   api/backend
 
 Indices and tables
 ==================
