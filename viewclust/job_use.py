@@ -85,6 +85,10 @@ def job_use(jobs, d_from, target, d_to='', use_unit='cpu',
             .subtract(jobs_end.groupby(pd.Grouper(freq='H')).sum()['use_unit'] \
             .fillna(0), fill_value=0).cumsum()
 
+    baseline = target_series([(d_from, d_to, 0)])
+    queued = queued.add(baseline,fill_value=0)
+    running = running.add(baseline,fill_value=0)
+
     # Target: If int, calculate it, else use the variable passed (should be a series)
     clust = pd.DataFrame()
     if isinstance(target, int):

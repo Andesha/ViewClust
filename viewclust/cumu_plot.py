@@ -1,7 +1,7 @@
 import numpy as np
 import plotly.graph_objects as go
 
-def cumu_plot(clust_info, cores_queued, cores_running, fig_out='', query_bounds=True):
+def cumu_plot(clust_info, cores_queued, cores_running, fig_out='', query_bounds=True, submit_run = []):
     """Cumulative usage plot.
 
     Parameters
@@ -36,13 +36,21 @@ def cumu_plot(clust_info, cores_queued, cores_running, fig_out='', query_bounds=
                              mode='lines',
                              name='Resources queued',
                              marker_color='rgba(160,160,220, .8)'))
+    if len(submit_run) > 0:
+	    fig.add_trace(go.Scatter(x=submit_run.index,
+                             	y=np.cumsum(submit_run).divide(len(clust_info)),
+                             	mode='lines',
+                             	name='Resources run at submit',
+                             	marker_color='rgba(220,160,160, .8)'))
     fig.add_trace(go.Scatter(x=cores_running.index,
                              y=np.cumsum(cores_running).divide(len(clust_info)),
                              mode='lines',
                              name='Resources consumed',
                              marker_color='rgba(80,80,220, .8)'))
     if query_bounds:
-        max_y = max(cores_running.max(), cores_queued.max())
+        max_y = max(np.cumsum(clust_info).divide(len(clust_info)).max(),
+            np.cumsum(cores_running).divide(len(clust_info)).max(),
+            np.cumsum(cores_queued).divide(len(clust_info)).max())
         min_x = clust_info.index.min()
         max_x = clust_info.index.max()
         fig.add_shape(dict(type="line", x0=min_x, y0=0, x1=min_x, y1=max_y,

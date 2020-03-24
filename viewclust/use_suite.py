@@ -1,7 +1,7 @@
 from pathlib import Path
 import viewclust as vc
 
-def use_suite(clust_info, cores_queued, cores_running, folder):
+def use_suite(clust_info, cores_queued, cores_running, folder, submit_run = []):
     """Creates a folder of a given name and creates figures inside of it.
 
     Function is intended to be called in a loop over a list of accounts.
@@ -32,5 +32,5 @@ def use_suite(clust_info, cores_queued, cores_running, folder):
     Path(safe_folder).mkdir(parents=True, exist_ok=True)
 
     # Add more to the suite as you like
-    vc.cumu_plot(clust_info, cores_queued, cores_running, safe_folder+'cumu_plot.html')
-    vc.insta_plot(clust_info, cores_queued, cores_running, safe_folder+'insta_plot.html')
+    vc.cumu_plot(clust_info, cores_queued, cores_running, safe_folder+'cumu_plot.html', submit_run = submit_run)
+    vc.insta_plot(clust_info, cores_queued, cores_running, safe_folder+'insta_plot.html', submit_run = submit_run)

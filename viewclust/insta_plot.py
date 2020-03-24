@@ -1,7 +1,7 @@
 import plotly.graph_objects as go
 
 def insta_plot(clust_info, cores_queued, cores_running,
-               fig_out='', y_label='Usage', fig_title='', query_bounds=True):
+               fig_out='', y_label='Usage', fig_title='', query_bounds=True, submit_run = []):
     """Instantaneous usage plot.
 
     Parameters
@@ -38,6 +38,11 @@ def insta_plot(clust_info, cores_queued, cores_running,
                              mode='lines',
                              name='Resources queued',
                              marker_color='rgba(160,160,220, .8)'))
+    if len(submit_run) > 0:
+	    fig.add_trace(go.Scatter(x=submit_run.index, y=submit_run,
+                             	mode='lines',
+                             	name='Resources run at submit',
+                             	marker_color='rgba(220,80,80, .8)'))
     fig.add_trace(go.Scatter(x=cores_running.index, y=cores_running,
                              mode='lines',
                              name='Resources running',
