@@ -1,7 +1,7 @@
 import plotly.graph_objects as go
 
 def insta_plot(clust_info, cores_queued, cores_running,
-               fig_out='', y_label='Usage', fig_title='', query_bounds=True, submit_run = []):
+               fig_out='', y_label='Usage', fig_title='', query_bounds=True, submit_run=None):
     """Instantaneous usage plot.
 
     Parameters
@@ -22,6 +22,10 @@ def insta_plot(clust_info, cores_queued, cores_running,
     query_bounds: bool, optional
         Draws red lines on the figure to represent where query is valid.
         Defaults to true.
+    submit_run: DataFrame, optional
+        Draws a red line representing what would usage have looked like
+        if jobs had started instantly. Allows for easier interpretation of
+        the queued series. Defaults to not plotting.
 
     See Also
     -------
@@ -38,7 +42,7 @@ def insta_plot(clust_info, cores_queued, cores_running,
                              mode='lines',
                              name='Resources queued',
                              marker_color='rgba(160,160,220, .8)'))
-    if len(submit_run) > 0:
+    if not submit_run:
 	    fig.add_trace(go.Scatter(x=submit_run.index, y=submit_run,
                              	mode='lines',
                              	name='Resources run at submit',

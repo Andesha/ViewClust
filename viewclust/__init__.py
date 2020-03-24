@@ -4,7 +4,6 @@ from ._version import __version__
 # High level functions
 from .job_stack import job_stack
 from .job_use import job_use
-from .job_submit_start import job_submit_start
 from .node_use import node_use
 from .use_suite import use_suite
 from .cumu_plot import cumu_plot

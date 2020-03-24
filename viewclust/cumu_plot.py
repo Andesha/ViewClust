@@ -1,7 +1,7 @@
 import numpy as np
 import plotly.graph_objects as go
 
-def cumu_plot(clust_info, cores_queued, cores_running, fig_out='', query_bounds=True, submit_run = []):
+def cumu_plot(clust_info, cores_queued, cores_running, fig_out='', query_bounds=True, submit_run=None):
     """Cumulative usage plot.
 
     Parameters
@@ -18,39 +18,46 @@ def cumu_plot(clust_info, cores_queued, cores_running, fig_out='', query_bounds=
     query_bounds: bool, optional
         Draws red lines on the figure to represent where query is valid.
         Defaults to true.
+    submit_run: DataFrame, optional
+        Draws a red line representing what would usage have looked like
+        if jobs had started instantly. Allows for easier interpretation of
+        the queued series. Defaults to not plotting.
 
     See Also
     -------
     jobUse: Generates the input frames for this function.
     """
 
+    # Avoid recalculations via these:
+    clust_sum = np.cumsum(clust_info).divide(len(clust_info))
+    run_sum = np.cumsum(cores_running).divide(len(clust_info))
+    queue_sum = np.cumsum(cores_queued).divide(len(clust_info))
+
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=clust_info.index,
-                             y=np.cumsum(clust_info).divide(len(clust_info)),
+                             y=clust_sum,
                              fill='tozeroy',
                              mode='none',
                              name='group allocation',
                              fillcolor='rgba(180, 180, 180, .3)'))
     fig.add_trace(go.Scatter(x=cores_queued.index,
-                             y=np.cumsum(cores_queued).divide(len(clust_info)),
+                             y=queue_sum,
                              mode='lines',
                              name='Resources queued',
                              marker_color='rgba(160,160,220, .8)'))
-    if len(submit_run) > 0:
+    if not submit_run:
 	    fig.add_trace(go.Scatter(x=submit_run.index,
                              	y=np.cumsum(submit_run).divide(len(clust_info)),
                              	mode='lines',
                              	name='Resources run at submit',
                              	marker_color='rgba(220,160,160, .8)'))
     fig.add_trace(go.Scatter(x=cores_running.index,
-                             y=np.cumsum(cores_running).divide(len(clust_info)),
+                             y=run_sum,
                              mode='lines',
                              name='Resources consumed',
                              marker_color='rgba(80,80,220, .8)'))
     if query_bounds:
-        max_y = max(np.cumsum(clust_info).divide(len(clust_info)).max(),
-            np.cumsum(cores_running).divide(len(clust_info)).max(),
-            np.cumsum(cores_queued).divide(len(clust_info)).max())
+        max_y = max(clust_sum.max(), run_sum.max(), queue_sum.max())
         min_x = clust_info.index.min()
         max_x = clust_info.index.max()
         fig.add_shape(dict(type="line", x0=min_x, y0=0, x1=min_x, y1=max_y,

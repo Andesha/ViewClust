@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from viewclust.target_series import target_series
 
-def job_use(jobs, d_from, target, d_to='', use_unit='cpu',
+def job_use(jobs, d_from, target, d_to='', use_unit='cpu', insta_use=False,
             serialize_queued='', serialize_running='', serialize_dist=''):
     """Takes a DataFrame full of job information and returns usage based on specified unit.
 
@@ -17,6 +17,9 @@ def job_use(jobs, d_from, target, d_to='', use_unit='cpu',
     use_unit: str, optional
         Usage unit to examine. One of: {'cpu', 'cpu-eqv', 'gpu', 'gpu-eqv'}.
         Defaults to 'cpu'.
+    insta_use: boolean, optional
+        If true, transforms the data to be as if each job ran instantly.
+        Defaults to false.
     d_from: date str
         Beginning of the query period, e.g. '2019-04-01T00:00:00'.
     target: int-like
@@ -41,6 +44,13 @@ def job_use(jobs, d_from, target, d_to='', use_unit='cpu',
     dist_from_target:
         Series for delta plots
     """
+
+    # Boilerplate for insta transformation
+    if insta_use:
+        jobs = jobs.copy() # Just to be safe
+        end = jobs['submit'] + (jobs['end'] - jobs['start'])
+        jobs['start'] = jobs['submit']
+        jobs['end'] = end
 
     # d_to boilerplate
     if d_to == '':
