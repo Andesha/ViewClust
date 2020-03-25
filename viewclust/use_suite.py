@@ -1,7 +1,7 @@
 from pathlib import Path
 import viewclust as vc
 
-def use_suite(clust_info, cores_queued, cores_running, folder, submit_run=None):
+def use_suite(clust_info, cores_queued, cores_running, folder, submit_run=[]):
     """Creates a folder of a given name and creates figures inside of it.
 
     Function is intended to be called in a loop over a list of accounts.

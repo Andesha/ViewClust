@@ -1,7 +1,7 @@
 import numpy as np
 import plotly.graph_objects as go
 
-def cumu_plot(clust_info, cores_queued, cores_running, fig_out='', query_bounds=True, submit_run=None):
+def cumu_plot(clust_info, cores_queued, cores_running, fig_out='', query_bounds=True, submit_run=[]):
     """Cumulative usage plot.
 
     Parameters
@@ -45,7 +45,7 @@ def cumu_plot(clust_info, cores_queued, cores_running, fig_out='', query_bounds=
                              mode='lines',
                              name='Resources queued',
                              marker_color='rgba(160,160,220, .8)'))
-    if not submit_run:
+    if len(submit_run) > 0:
 	    fig.add_trace(go.Scatter(x=submit_run.index,
                              	y=np.cumsum(submit_run).divide(len(clust_info)),
                              	mode='lines',
