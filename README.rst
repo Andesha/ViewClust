@@ -44,7 +44,7 @@ Credits
 
 Developed for:
 
-* SHARCNET_ 
+* SHARCNET_
 * `Compute Canada`_
 
 This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
@@ -53,5 +53,5 @@ This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypack
 .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
 .. _`Tyler Collins`: https://github.com/Andesha
 .. _`James Desjardins`: https://github.com/jadesjardins
-.. _'SHARCNET`: https://www.sharcnet.ca/my/front/
+.. _SHARCNET: https://www.sharcnet.ca/my/front/
 .. _`Compute Canada`: https://www.computecanada.ca/
