@@ -64,15 +64,10 @@ def job_use(jobs, d_from, target, d_to='', use_unit='cpu', insta_use=False,
         jobs['mem_scale'] = jobs['mem'] / 4096.0
         jobs['use_unit'] = jobs[['mem_scale', 'reqcpus']].max(axis=1)
     elif use_unit == 'gpu':
-        # If erroring from elasticsearch double check column names
-        # Other thing to check: if reqgres has things other than gpu reqs in it
-        print('Warning! : some jobs may not have proper gpu reqtres/reqgres')
-        try:
-            raise ValueError('Currently unstable. Uncomment exception at own risk.')
+        try: # Slurm below
             jobs['ngpus'] = jobs['reqgres'].str.extract(r'gpu:(\d+)').astype('float')
-        except KeyError:
-            # This is the elastic search one here:
-            print('Warning: compatability issue for column names needs to be fixed.')
+            raise ValueError('Currently being worked on. Uncomment in dev mode to proceed.')
+        except KeyError: # ElasticSearch based below
             jobs['ngpus'] = jobs['reqtres'].str.extract(r'gpu=(\d+)').astype('float')
 
         jobs['use_unit'] = jobs['ngpus']

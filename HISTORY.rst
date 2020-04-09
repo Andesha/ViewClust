@@ -2,6 +2,16 @@
 History
 =======
 
+0.1.6 (2020-04-09)
+------------------
+
+* GPU usage added back
+* README fixes to include credits and features
+* Figures now return their handles for extra processing if needed
+* Figures can now have their polling rates downsampled for ease of sharing
+* Prepared responses for figures section added in to documentation
+
+
 0.1.5 (2020-03-12)
 ------------------
 

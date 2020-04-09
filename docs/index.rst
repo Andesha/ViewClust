@@ -8,6 +8,7 @@ Welcome to ViewClust's documentation!
    readme
    installation
    usage
+   figures
    modules
    contributing
    authors

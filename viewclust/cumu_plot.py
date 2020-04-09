@@ -1,7 +1,8 @@
 import numpy as np
 import plotly.graph_objects as go
 
-def cumu_plot(clust_info, cores_queued, cores_running, fig_out='', query_bounds=True, submit_run=[]):
+def cumu_plot(clust_info, cores_queued, cores_running, resample_str='',
+              fig_out='', query_bounds=True, submit_run=[]):
     """Cumulative usage plot.
 
     Parameters
@@ -12,6 +13,10 @@ def cumu_plot(clust_info, cores_queued, cores_running, fig_out='', query_bounds=
         Series displaying queued resources at a particular time. See jobUse.
     cores_running: array_like of DataFrame
         Series displaying running resources at a particular time. See jobUse.
+    resample_str: pandas freq str, optional
+        Defaults to empty, meaning no resampling. Passing this parameter
+        does not do sanity checking and will only run the below code example.
+        cores_queued = cores_queued.resample('1D').sum()
     fig_out: str, optional
         Writes the generated figure to file as the given name. 
         If empty, skips writing. Defaults to empty.
@@ -32,6 +37,11 @@ def cumu_plot(clust_info, cores_queued, cores_running, fig_out='', query_bounds=
     clust_sum = np.cumsum(clust_info).divide(len(clust_info))
     run_sum = np.cumsum(cores_running).divide(len(clust_info))
     queue_sum = np.cumsum(cores_queued).divide(len(clust_info))
+
+    if resample_str != '':
+        clust_sum = clust_sum.resample(resample_str).sum()
+        run_sum = run_sum.resample(resample_str).sum()
+        queue_sum = queue_sum.resample(resample_str).sum()
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=clust_info.index,

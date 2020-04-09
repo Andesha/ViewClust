@@ -1,6 +1,6 @@
 import plotly.graph_objects as go
 
-def insta_plot(clust_info, cores_queued, cores_running,
+def insta_plot(clust_info, cores_queued, cores_running, resample_str='',
                fig_out='', y_label='Usage', fig_title='', query_bounds=True, submit_run=[]):
     """Instantaneous usage plot.
 
@@ -12,6 +12,10 @@ def insta_plot(clust_info, cores_queued, cores_running,
         Series displaying queued resources at a particular time. See jobUse.
     cores_running: array_like of DataFrame
         Series displaying running resources at a particular time. See jobUse.
+    resample_str: pandas freq str, optional
+        Defaults to empty, meaning no resampling. Passing this parameter
+        does not do sanity checking and will only run the below code example.
+        cores_queued = cores_queued.resample('1D').sum()
     fig_out: str, optional
         Writes the generated figure to file as the given name.
         If empty, skips writing. Defaults to empty.
@@ -32,22 +36,30 @@ def insta_plot(clust_info, cores_queued, cores_running,
     jobUse: Generates the input frames for this function.
     """
 
+    # Temp vars so that we aren't touching anything by ref
+    if resample_str != '':
+        clust_info_tmp = clust_info_tmp.resample(resample_str).sum()
+        cores_queued_tmp = cores_queued_tmp.resample(resample_str).sum()
+        cores_running_tmp = cores_running_tmp.resample(resample_str).sum()
+
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=clust_info.index, y=clust_info,
+    fig.add_trace(go.Scatter(x=clust_info_tmp.index, y=clust_info_tmp,
                              fill='tozeroy',
                              mode='none',
                              name='Allocation',
                              fillcolor='rgba(180, 180, 180, .3)'))
-    fig.add_trace(go.Scatter(x=cores_queued.index, y=cores_queued,
+    fig.add_trace(go.Scatter(x=cores_queued_tmp.index, y=cores_queued_tmp,
                              mode='lines',
                              name='Resources queued',
                              marker_color='rgba(160,160,220, .8)'))
     if len(submit_run) > 0:
-	    fig.add_trace(go.Scatter(x=submit_run.index, y=submit_run,
+        if resample_str != '':
+            submit_run_tmp = submit_run.resample(resample_str).sum()
+	    fig.add_trace(go.Scatter(x=submit_run_tmp.index, y=submit_run_tmp,
                              	mode='lines',
                              	name='Resources run at submit',
                              	marker_color='rgba(220,80,80, .8)'))
-    fig.add_trace(go.Scatter(x=cores_running.index, y=cores_running,
+    fig.add_trace(go.Scatter(x=cores_running_tmp.index, y=cores_running_tmp,
                              mode='lines',
                              name='Resources running',
                              marker_color='rgba(80,80,220, .8)'))
