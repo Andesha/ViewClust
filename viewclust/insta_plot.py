@@ -37,6 +37,10 @@ def insta_plot(clust_info, cores_queued, cores_running, resample_str='',
     """
 
     # Temp vars so that we aren't touching anything by ref
+    clust_info_tmp = clust_info.copy()
+    cores_queued_tmp = cores_queued.copy()
+    cores_running_tmp = cores_running.copy()
+
     if resample_str != '':
         clust_info_tmp = clust_info_tmp.resample(resample_str).sum()
         cores_queued_tmp = cores_queued_tmp.resample(resample_str).sum()
