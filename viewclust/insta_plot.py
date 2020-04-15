@@ -57,8 +57,9 @@ def insta_plot(clust_info, cores_queued, cores_running, resample_str='',
                              name='Resources queued',
                              marker_color='rgba(160,160,220, .8)'))
     if len(submit_run) > 0:
+        submit_run_tmp = submit_run.copy()
         if resample_str != '':
-            submit_run_tmp = submit_run.resample(resample_str).sum()
+            submit_run_tmp = submit_run_tmp.resample(resample_str).sum()
 
         fig.add_trace(go.Scatter(x=submit_run_tmp.index, y=submit_run_tmp,
                              	mode='lines',
