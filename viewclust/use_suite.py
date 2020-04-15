@@ -36,5 +36,5 @@ def use_suite(clust_info, cores_queued, cores_running, folder, submit_run=[]):
     Path(safe_folder).mkdir(parents=True, exist_ok=True)
 
     # Add more to the suite as you like
-    vc.cumu_plot(clust_info, cores_queued, cores_running, safe_folder+'cumu_plot.html', submit_run=submit_run)
-    vc.insta_plot(clust_info, cores_queued, cores_running, safe_folder+'insta_plot.html', submit_run=submit_run)
+    vc.cumu_plot(clust_info, cores_queued, cores_running, fig_out=safe_folder+'cumu_plot.html', submit_run=submit_run)
+    vc.insta_plot(clust_info, cores_queued, cores_running, fig_out=safe_folder+'insta_plot.html', submit_run=submit_run)
