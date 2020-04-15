@@ -2,7 +2,7 @@
 History
 =======
 
-0.1.10 (2020-04-14)
+0.2.0 (2020-04-14)
 ------------------
 
 * Fix use suite string passing bug
