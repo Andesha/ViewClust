@@ -12,3 +12,4 @@ from .viol_plot import viol_plot
 from .delta_plot import delta_plot
 from .summary_page import summary_page
 from .target_series import target_series
+from .get_users_run import get_users_run

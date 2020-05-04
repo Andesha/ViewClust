@@ -2,7 +2,7 @@ import numpy as np
 import plotly.graph_objects as go
 
 def cumu_plot(clust_info, cores_queued, cores_running, resample_str='',
-              fig_out='', query_bounds=True, submit_run=[]):
+              fig_out='', query_bounds=True, submit_run=[], user_run=[]):
     """Cumulative usage plot.
 
     Parameters
@@ -50,6 +50,18 @@ def cumu_plot(clust_info, cores_queued, cores_running, resample_str='',
                              mode='none',
                              name='group allocation',
                              fillcolor='rgba(180, 180, 180, .3)'))
+
+    if len(user_run)>0:
+        for user in user_run:
+            fig.add_trace(go.Scatter(
+            x=user_run.index,y=np.cumsum(user_run[user]).divide(len(clust_info)),
+            hoverinfo='x+y',
+            opacity=.1,
+            mode='none',
+            name=user,
+            stackgroup='use' # define stack group
+            ))
+
     fig.add_trace(go.Scatter(x=cores_queued.index,
                              y=queue_sum,
                              mode='lines',
