@@ -1,7 +1,7 @@
 import plotly.graph_objects as go
 
 def insta_plot(clust_info, cores_queued, cores_running, resample_str='',
-               fig_out='', y_label='Usage', fig_title='', query_bounds=True, submit_run=[]):
+               fig_out='', y_label='Usage', fig_title='', query_bounds=True, submit_run=[], user_run=[]):
     """Instantaneous usage plot.
 
     Parameters
@@ -52,6 +52,20 @@ def insta_plot(clust_info, cores_queued, cores_running, resample_str='',
                              mode='none',
                              name='Allocation',
                              fillcolor='rgba(180, 180, 180, .3)'))
+
+    if len(user_run)>0:
+        for user in user_run:
+            fig.add_trace(go.Scatter(
+            x=user_run.index,y=user_run[user],
+            line=dict(width=0),
+            hoverinfo='x+y',
+            opacity=.1,
+            mode='none',
+            name=user,
+            stackgroup='use' # define stack group
+            ))
+
+
     fig.add_trace(go.Scatter(x=cores_queued_tmp.index, y=cores_queued_tmp,
                              mode='lines',
                              name='Resources queued',
