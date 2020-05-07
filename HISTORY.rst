@@ -2,7 +2,7 @@
 History
 =======
 
-0.2.1 (2020-05-07)
+0.2.2 (2020-05-07)
 ------------------
 
 * Added support for user breakdown of activity on plots
