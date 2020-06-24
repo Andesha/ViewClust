@@ -2,6 +2,19 @@
 History
 =======
 
+0.3.0 (2020-06-24)
+------------------
+
+* Major versioning bump
+* User area colouring in usage figures
+* Mem info plotting support
+* Serialization of user
+* Removed violin plot. Moved to ViewClust-Vis
+* Removed use_suite. Moved to ViewClust-Vis
+* Removed job_stack. Moved to ViewClust-Vis
+* Deprecated cumu/insta plotting function. Supported versions moved to ViewClust-Vis
+
+
 0.2.2 (2020-05-07)
 ------------------
 

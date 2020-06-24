@@ -1,5 +1,6 @@
 import numpy as np
 import plotly.graph_objects as go
+import sys
 
 def cumu_plot(clust_info, cores_queued, cores_running, resample_str='',
               fig_out='', query_bounds=True, submit_run=[], user_run=[],
@@ -35,6 +36,8 @@ def cumu_plot(clust_info, cores_queued, cores_running, resample_str='',
     -------
     jobUse: Generates the input frames for this function.
     """
+
+    print('This function is deprecated as of v0.3.0.\nSupport continues in the ViewClust-Vis package.', file=sys.err)
 
     # Avoid recalculations via these:
     clust_sum = np.cumsum(clust_info).divide(len(clust_info))
