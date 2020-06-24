@@ -21,6 +21,9 @@ def get_users_run(jobs, d_from, target, d_to='', use_unit='cpu'):
         Typically a cpu allocation or core eqv value for a particular acount, often 50.
     d_to: date str, optional
         End of the query period, e.g. '2020-01-01T00:00:00'. Defaults to now if empty.
+    serialize_running: str, optional
+        Pickle given structure with argument as a name. If left empty, pickle procedure is skipped.
+        Defaults to empty.
 
     Returns
     -------
@@ -34,7 +37,7 @@ def get_users_run(jobs, d_from, target, d_to='', use_unit='cpu'):
     for user in users:
         user_mask=jobs['user'].str.match(user)
         user_jobs=jobs[user_mask].copy()
-        _,user_queued,user_running,_ = job_use(user_jobs, d_from, target, d_to=d_to, use_unit='cpu')
+        _,user_queued,user_running,_ = job_use(user_jobs, d_from, target, d_to=d_to, use_unit=use_unit)
 
         user_queued=user_queued[d_from:d_to]
         user_running=user_running[d_from:d_to]
@@ -48,3 +51,7 @@ def get_users_run(jobs, d_from, target, d_to='', use_unit='cpu'):
         user_count = user_count + 1
 
     return user_running_cat
+
+    if serialize_running != '':
+        user_running_cat.to_pickle(serialize_running)
+
