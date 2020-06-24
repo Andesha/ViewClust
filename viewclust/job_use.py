@@ -66,7 +66,7 @@ def job_use(jobs, d_from, target, d_to='', use_unit='cpu', insta_use=False,
     elif use_unit == 'gpu':
         try: # Slurm below
             jobs['ngpus'] = jobs['reqgres'].str.extract(r'gpu:(\d+)').astype('float')
-            raise ValueError('Currently being worked on. Uncomment in dev mode to proceed.')
+            #raise ValueError('Currently being worked on. Uncomment in dev mode to proceed.')
         except KeyError: # ElasticSearch based below
             jobs['ngpus'] = jobs['reqtres'].str.extract(r'gpu=(\d+)').astype('float')
 
