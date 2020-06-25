@@ -12,12 +12,12 @@ Or use an alias::
 
 Functions can then be called as expected via::
 
-    vc.job_stack(jobs)
+    vc.job_use(jobs)
 
 Generating Job Stack Plots
 ########
 
-To view a job stack plot for an account group the following pattern can be used::
+To view an insta plot for an account group the following pattern can be used::
 
     import viewclust as vc
     from viewclust import slurm
@@ -29,10 +29,8 @@ To view a job stack plot for an account group the following pattern can be used:
 
     # More parameters and default arguments explored in docstrings
     job_frame = slurm.sacct_jobs(account, d_from, d_to=d_to)
-
-    # Can take some time...
-    print('Computing job stack...')
-    vc.job_stack(job_frame, fig_out=account+'_stack.html', plot_title=account)
+    clust_target, queued, running, dist = vc.job_use(job_frame, d_from, target, d_to=d_to, use_unit='cpu-eqv')
+    insta_plot(clust_target, queued, running, fig_out=account+'.html'):
 
 Things to note about this example:
 
@@ -76,10 +74,6 @@ Generating a RAC Summary
 
 This example script is a sample of what could be used to generate a RAC summary.
 Input in this case is a csv file of the following form: account,core_award,core_eqv_award.
-The final output of this sample uses additional ViewClust helper functions to build folders
-containing the instantaneous and cumulative job states plotted against their respective targets for each account.
-Two additional pages are created. One, plotting the distance from target of an account on the same
-axis as other accounts. Two, a helper HTML page which is built to serve as a home page for the summary.
 
 The example is provided with comments describing what could be changed here::
 
@@ -125,21 +119,15 @@ The example is provided with comments describing what could be changed here::
         if job_frame is not None:
             # Compute usage in terms of core equiv
             clust_target, queued, running, dist = vc.job_use(job_frame, d_from, target, d_to=d_to, use_unit='cpu-eqv')
-            # Call cumu and insta plots wrapped together
-            vc.use_suite(clust_target, queued, running, account)
+            insta_plot(clust_target, queued, running, fig_out=account+'.html'):
 
-            # Hand information off to lists for later
+            # Hand information off to lists for later if need be
             account_list.append(account)
             dist_list.append(dist)
             print('Done account: ', account)
         else:
             # Potentially handle differently, but skip for now
             print('Skipped account: ', account)
-
-    # Plot everyone's deviation from target on the same axis:
-    vc.delta_plot(account_list,dist_list, 'delta_plot.html')
-    # Generate an html page which can link to the various accounts:
-    vc.summary_page(account_list, 'all_figures.html')
 
 Things to note about this example:
 

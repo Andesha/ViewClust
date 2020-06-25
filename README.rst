@@ -16,7 +16,7 @@ ViewClust
 
 
 
-Python package for visualizing cluster measures.
+Python package for computing cluster measures.
 
 
 * Free software: MIT license
@@ -28,12 +28,10 @@ Features
 
 * Calculates job usage based on inputs from Slurm or other formatted data frames
 * Plots cumulative and instantaneous usage
-* Supports report building by grouping accounts together into folder structures
-* Plots job history with respect to job shape
 * Accepts dynamic targets for account and system analysis
 * Provides a basic interface for generating job data frames from Slurm
-* Downsampling of figures for easier sharing
-* Figures can write to html for sharing on various web resources
+
+For more plotting options and dashboard suites see the ViewClust-Vis_ package.
 
 
 Credits
@@ -41,6 +39,7 @@ Credits
 
 * `Tyler Collins`_
 * `James Desjardins`_
+* `Chris Want`_
 
 Developed for:
 
@@ -55,3 +54,5 @@ This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypack
 .. _`James Desjardins`: https://github.com/jadesjardins
 .. _SHARCNET: https://www.sharcnet.ca/my/front/
 .. _`Compute Canada`: https://www.computecanada.ca/
+.. _ViewClust-Vis: https://github.com/Andesha/ViewClust-Vis
+.. _`Chris Want`: https://github.com/cwant

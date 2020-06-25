@@ -5,6 +5,11 @@ def insta_plot(clust_info, cores_queued, cores_running, resample_str='',
                fig_out='', y_label='Usage', fig_title='', query_bounds=True, submit_run=[], user_run=[]):
     """Instantaneous usage plot.
 
+    This function is deprecated as of v0.3.0.
+    
+    Support continues in the ViewClust-Vis package.
+
+
     Parameters
     -------
     clust_info: DataFrame

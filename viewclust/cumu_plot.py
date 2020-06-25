@@ -7,6 +7,10 @@ def cumu_plot(clust_info, cores_queued, cores_running, resample_str='',
               plot_queued=False):
     """Cumulative usage plot.
 
+    This function is deprecated as of v0.3.0.
+    
+    Support continues in the ViewClust-Vis package.
+
     Parameters
     -------
     clust_info: DataFrame
