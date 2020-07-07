@@ -41,7 +41,7 @@ def cumu_plot(clust_info, cores_queued, cores_running, resample_str='',
     jobUse: Generates the input frames for this function.
     """
 
-    print('This function is deprecated as of v0.3.0.\nSupport continues in the ViewClust-Vis package.', file=sys.err)
+    print('This function is deprecated as of v0.3.0.\nSupport continues in the ViewClust-Vis package.', file=sys.stderr)
 
     # Avoid recalculations via these:
     clust_sum = np.cumsum(clust_info).divide(len(clust_info))

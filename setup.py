@@ -11,11 +11,11 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = ['pandas', 'numpy', 'plotly']
+requirements = ['pandas', 'numpy', 'plotly', 'plotille']
 
-setup_requirements = ['pandas', 'numpy', 'plotly']
+setup_requirements = ['pandas', 'numpy', 'plotly', 'plotille']
 
-test_requirements = ['pandas', 'numpy', 'plotly']
+test_requirements = ['pandas', 'numpy', 'plotly', 'plotille']
 
 VERSIONFILE = "viewclust/_version.py"
 VERSTRLINE = open(VERSIONFILE, "rt").read()

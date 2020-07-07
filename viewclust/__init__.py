@@ -8,3 +8,4 @@ from .cumu_plot import cumu_plot
 from .insta_plot import insta_plot
 from .target_series import target_series
 from .get_users_run import get_users_run
+from .to_terminal import to_terminal

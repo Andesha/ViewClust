@@ -2,6 +2,13 @@
 History
 =======
 
+0.4.0 (2020-07-07)
+------------------
+
+* Add new support for plotting to the terminal
+* Bug fix stderr output
+
+
 0.3.2 (2020-06-25)
 ------------------
 
