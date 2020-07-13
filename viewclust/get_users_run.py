@@ -1,7 +1,7 @@
 from viewclust.job_use import job_use
 import pandas as pd
 
-def get_users_run(jobs, d_from, target, d_to='', use_unit='cpu'):
+def get_users_run(jobs, d_from, target, d_to='', use_unit='cpu', serialize_running=''):
     """Takes a DataFrame full of job information and returns usage for each "user" 
     uniquely based on specified unit.
 
@@ -50,8 +50,9 @@ def get_users_run(jobs, d_from, target, d_to='', use_unit='cpu'):
 
         user_count = user_count + 1
 
-    return user_running_cat
-
     if serialize_running != '':
         user_running_cat.to_pickle(serialize_running)
+
+    return user_running_cat
+
 
