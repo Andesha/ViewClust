@@ -2,6 +2,13 @@
 History
 =======
 
+0.4.1 (2020-07-13)
+------------------
+
+* Can now serialize user run
+* Crediting Sergio!
+
+
 0.4.0 (2020-07-07)
 ------------------
 

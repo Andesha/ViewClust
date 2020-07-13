@@ -39,6 +39,7 @@ Credits
 
 * `Tyler Collins`_
 * `James Desjardins`_
+* `Jose Sergio Hleap`_
 * `Chris Want`_
 
 Developed for:
@@ -52,6 +53,7 @@ This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypack
 .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
 .. _`Tyler Collins`: https://github.com/Andesha
 .. _`James Desjardins`: https://github.com/jadesjardins
+.. _`Jose Sergio Hleap`: https://github.com/jshleap
 .. _SHARCNET: https://www.sharcnet.ca/my/front/
 .. _`Compute Canada`: https://www.computecanada.ca/
 .. _ViewClust-Vis: https://github.com/Andesha/ViewClust-Vis
