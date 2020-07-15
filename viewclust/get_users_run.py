@@ -50,6 +50,9 @@ def get_users_run(jobs, d_from, target, d_to='', use_unit='cpu', serialize_runni
 
         user_count = user_count + 1
 
+    if user_count == 1:
+        user_running_cat=user_running_cat.to_frame();
+    
     if serialize_running != '':
         user_running_cat.to_pickle(serialize_running)
 

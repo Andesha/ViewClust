@@ -58,7 +58,7 @@ def mem_info(d_from, account, fig_out='', debugging=False):
     mem_frame['memHold'] = mem_frame['reqmem'].map(lambda x: int(x.lstrip('+-').rstrip('MmNnCc')))
     core_mask = (mem_frame['reqmem'].str.contains('c'))
     node_mask = (mem_frame['reqmem'].str.contains('n'))
-    print(mem_frame)
+
     mem_frame.loc[core_mask, 'memHold'] = (mem_frame['reqcpus'] * mem_frame['memHold'])
     mem_frame.loc[node_mask, 'memHold'] = (mem_frame['nnodes'] * mem_frame['memHold'])
     mem_frame = mem_frame.rename(columns={'memHold':'alloc_mem'})
@@ -68,8 +68,8 @@ def mem_info(d_from, account, fig_out='', debugging=False):
     if debugging:
         print('Done column building')
 
-    print('Units is MB:')
-    print(mem_frame['maxrss'].describe())
+    #print('Units is MB:')
+    #print(mem_frame['maxrss'].describe())
 
     if fig_out != '':
         x_points = []
@@ -104,6 +104,34 @@ def mem_info(d_from, account, fig_out='', debugging=False):
 		        name='maxrss',
 		        hovertext=mem_frame['name']))
                 
+        fig.update_layout(
+                title=go.layout.Title(
+                    text="Job memory: ",
+                    xref="paper",
+                    x=0
+                ),
+                xaxis=go.layout.XAxis(
+                    title=go.layout.xaxis.Title(
+                        text="Date Time",
+                        font=dict(
+                            family="Courier New, monospace",
+                            size=18,
+                            color="#7f7f7f"
+                        )
+                    )
+                ),
+                yaxis=go.layout.YAxis(
+                    title=go.layout.yaxis.Title(
+                        text='Memory in GB',
+                        font=dict(
+                            family="Courier New, monospace",
+                            size=18,
+                            color="#7f7f7f"
+                        )
+                    )
+                )
+            )
+
         fig.write_html(fig_out)
 
 
