@@ -2,6 +2,13 @@
 History
 =======
 
+0.4.3 (2020-07-22)
+------------------
+
+* Refactor calculations for eqv use_unit measures
+* Completed support for gpu eqv usage calculations
+
+
 0.4.2 (2020-07-15)
 ------------------
 
