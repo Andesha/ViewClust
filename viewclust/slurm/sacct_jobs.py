@@ -37,7 +37,7 @@ def sacct_jobs(account_query, d_from, d_to='', debugging=False,
 
     headers = ['jobid', 'user', 'account', 'submit', 'start', 'end',
                'ncpus', 'nnodes', 'reqmem', 'timelimit', 'state',
-               'reqgres', 'priority', 'partition']
+               'reqgres','reqtres','priority', 'partition']
     data = ''
 
     if sacct_file == '':
