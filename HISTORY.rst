@@ -2,6 +2,12 @@
 History
 =======
 
+0.4.4 (2020-09-14)
+------------------
+
+* Added ability to sacct poll all accounts in slurm submodule
+
+
 0.4.3 (2020-07-22)
 ------------------
 

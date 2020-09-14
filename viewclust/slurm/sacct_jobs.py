@@ -41,8 +41,13 @@ def sacct_jobs(account_query, d_from, d_to='', debugging=False,
     data = ''
 
     if sacct_file == '':
-        base_cmd = ['sacct', '-aX', '-A', account_query, '-S', d_from, '-E', d_to,
-                    '-p', '--delimiter', '"|"', '-n', '--units=M']
+        if account_query != '':
+            base_cmd = ['sacct', '-aX', '-A', account_query, '-S', d_from, '-E', d_to,
+                        '-p', '--delimiter', '"|"', '-n', '--units=M']
+        else:
+            base_cmd = ['sacct', '-aX', -S', d_from, '-E', d_to,
+                        '-p', '--delimiter', '"|"', '-n', '--units=M']
+
         base_cmd.append('-o')
         base_cmd.append(','.join(headers)+'%36')
 
