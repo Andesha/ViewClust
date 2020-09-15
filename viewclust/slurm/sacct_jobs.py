@@ -45,7 +45,7 @@ def sacct_jobs(account_query, d_from, d_to='', debugging=False,
             base_cmd = ['sacct', '-aX', '-A', account_query, '-S', d_from, '-E', d_to,
                         '-p', '--delimiter', '"|"', '-n', '--units=M']
         else:
-            base_cmd = ['sacct', '-aX', -S', d_from, '-E', d_to,
+            base_cmd = ['sacct', '-aX', '-S', d_from, '-E', d_to,
                         '-p', '--delimiter', '"|"', '-n', '--units=M']
 
         base_cmd.append('-o')
