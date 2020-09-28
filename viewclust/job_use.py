@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from viewclust.target_series import target_series
 
-def job_use(jobs, d_from, target, d_to='', use_unit='cpu', job_state='all',insta_use=False, insta_dur='run',
+def job_use(jobs, d_from, target, d_to='', use_unit='cpu', job_state='all', time_ref='',
             serialize_queued='', serialize_running='', serialize_dist=''):
     """Takes a DataFrame full of job information and returns usage based on specified unit.
 
@@ -20,11 +20,12 @@ def job_use(jobs, d_from, target, d_to='', use_unit='cpu', job_state='all',insta
     job_state: str, optional
         The job state to include in measurement: {'all','complete', 'running', 'queued'}.
         Defaults to 'complete'.
-    insta_use: boolean, optional
-        If true, transforms the data to be as if each job ran instantly.
-        Defaults to false.
+    time_ref: str, one of: {sub, req, sub+req}
+        sub: Jobs run as if they ran at submit time.
+        req: Jobs run their full execution time at normal start time.
+        sub+req: Jobs run their full execution time from their submit time.
     insta_dur: str, optional
-        The job duration used to calculate insta_use One of: {'run', 'req'}.
+        The job duration used to calculate time_ref One of: {'run', 'req'}.
         Defaults to 'run'.
     d_from: date str
         Beginning of the query period, e.g. '2019-04-01T00:00:00'.
@@ -57,38 +58,37 @@ def job_use(jobs, d_from, target, d_to='', use_unit='cpu', job_state='all',insta
         t_max = jobs[['submit','start','end']].max(axis=1)
         d_to=str(t_max.max())
 
+    # Filter on job state. Different from reason so it is safe.
     if job_state == 'complete':
         jobs_complete=jobs.copy()
         jobs_complete=jobs_complete.loc[jobs_complete['end'].notnull()]
-        jobs=jobs_complete.copy()
-
+        jobs=jobs_complete
     elif job_state == 'running':        
         jobs_running=jobs.copy()
         jobs_running=jobs_running.loc[jobs_running['state'] == 'RUNNING']
-        jobs=jobs_running.copy()
-
+        jobs=jobs_running
         jobs['end'] = jobs['start'] + jobs['timelimit']
-
     elif job_state == 'queued':
         jobs_queued=jobs.copy()
         jobs_queued=jobs_queued.loc[jobs_queued['state'] == 'PENDING']
-        jobs=jobs_queued.copy()
+        jobs=jobs_queued
 
         jobs['start'] = jobs['submit']
         jobs['end'] = pd.to_datetime(d_to) + jobs['timelimit']
 
-    # Boilerplate for insta transformation
-    if insta_use:
-        jobs = jobs.copy() # Just to be safe
-        if insta_dur == 'run':
+    # Boilerplate for time transformation
+    if time_ref != '':
+        jobs = jobs.copy()
+        if time_ref == 'sub':
             end = jobs['submit'] + (jobs['end'] - jobs['start'])
             jobs['start'] = jobs['submit']
             jobs['end'] = end
-        else: #assuming insta_dur = 'req'
+        elif time_ref == 'req':
+            jobs['end'] = (jobs['submit'] + jobs['timelimit'])
+        elif time_ref == 'sub+req':
             end = jobs['submit'] + jobs['timelimit']
             jobs['start'] = jobs['submit']
             jobs['end'] = end
-
 
     jobs = jobs.sort_values(by=['submit'])
 
@@ -127,13 +127,14 @@ def job_use(jobs, d_from, target, d_to='', use_unit='cpu', job_state='all',insta
     jobs_end = jobs.copy()
     jobs_end.index = jobs_end['end']
 
+    # Grouping by second resolution, and resampling for an hour after grouping
     queued = jobs_submit.groupby(pd.Grouper(freq='S')).sum()['use_unit'].fillna(0) \
             .subtract(jobs_start.groupby(pd.Grouper(freq='S')).sum()['use_unit'] \
             .fillna(0), fill_value=0).cumsum()
     running = jobs_start.groupby(pd.Grouper(freq='S')).sum()['use_unit'].fillna(0) \
             .subtract(jobs_end.groupby(pd.Grouper(freq='S')).sum()['use_unit'] \
             .fillna(0), fill_value=0).cumsum()
-
+    # Resample to hour 
     queued = queued.resample('H').mean()
     running = running.resample('H').mean()
 
