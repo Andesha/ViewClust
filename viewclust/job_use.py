@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from viewclust.target_series import target_series
 
-def job_use(jobs, d_from, target, d_to='', use_unit='cpu', insta_use=False,
+def job_use(jobs, d_from, target, d_to='', use_unit='cpu', job_state='all', time_ref='',
             serialize_queued='', serialize_running='', serialize_dist=''):
     """Takes a DataFrame full of job information and returns usage based on specified unit.
 
@@ -17,9 +17,16 @@ def job_use(jobs, d_from, target, d_to='', use_unit='cpu', insta_use=False,
     use_unit: str, optional
         Usage unit to examine. One of: {'cpu', 'cpu-eqv', 'gpu', 'gpu-eqv','gpu-eqv-cdr'}.
         Defaults to 'cpu'.
-    insta_use: boolean, optional
-        If true, transforms the data to be as if each job ran instantly.
-        Defaults to false.
+    job_state: str, optional
+        The job state to include in measurement: {'all','complete', 'running', 'queued'}.
+        Defaults to 'complete'.
+    time_ref: str, one of: {sub, req, sub+req}
+        sub: Jobs run as if they ran at submit time.
+        req: Jobs run their full execution time at normal start time.
+        sub+req: Jobs run their full execution time from their submit time.
+    insta_dur: str, optional
+        The job duration used to calculate time_ref One of: {'run', 'req'}.
+        Defaults to 'run'.
     d_from: date str
         Beginning of the query period, e.g. '2019-04-01T00:00:00'.
     target: int-like
@@ -45,16 +52,43 @@ def job_use(jobs, d_from, target, d_to='', use_unit='cpu', insta_use=False,
         Series for delta plots
     """
 
-    # Boilerplate for insta transformation
-    if insta_use:
-        jobs = jobs.copy() # Just to be safe
-        end = jobs['submit'] + (jobs['end'] - jobs['start'])
-        jobs['start'] = jobs['submit']
-        jobs['end'] = end
-
     # d_to boilerplate
+    # IF D_TO IS EMPTY IT SHOULD BE SET TO LATEST KNOWN STATE CHANGE TIME (SUBMIT,START,END) IN THE JOB RECORDS.
     if d_to == '':
-        d_to = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
+        t_max = jobs[['submit','start','end']].max(axis=1)
+        d_to=str(t_max.max())
+
+    # Filter on job state. Different from reason so it is safe.
+    if job_state == 'complete':
+        jobs_complete=jobs.copy()
+        jobs_complete=jobs_complete.loc[jobs_complete['end'].notnull()]
+        jobs=jobs_complete
+    elif job_state == 'running':        
+        jobs_running=jobs.copy()
+        jobs_running=jobs_running.loc[jobs_running['state'] == 'RUNNING']
+        jobs=jobs_running
+        jobs['end'] = jobs['start'] + jobs['timelimit']
+    elif job_state == 'queued':
+        jobs_queued=jobs.copy()
+        jobs_queued=jobs_queued.loc[jobs_queued['state'] == 'PENDING']
+        jobs=jobs_queued
+
+        jobs['start'] = jobs['submit']
+        jobs['end'] = pd.to_datetime(d_to) + jobs['timelimit']
+
+    # Boilerplate for time transformation
+    if time_ref != '':
+        jobs = jobs.copy()
+        if time_ref == 'sub':
+            end = jobs['submit'] + (jobs['end'] - jobs['start'])
+            jobs['start'] = jobs['submit']
+            jobs['end'] = end
+        elif time_ref == 'req':
+            jobs['end'] = (jobs['submit'] + jobs['timelimit'])
+        elif time_ref == 'sub+req':
+            end = jobs['submit'] + jobs['timelimit']
+            jobs['start'] = jobs['submit']
+            jobs['end'] = end
 
     jobs = jobs.sort_values(by=['submit'])
 
@@ -93,12 +127,16 @@ def job_use(jobs, d_from, target, d_to='', use_unit='cpu', insta_use=False,
     jobs_end = jobs.copy()
     jobs_end.index = jobs_end['end']
 
-    queued = jobs_submit.groupby(pd.Grouper(freq='H')).sum()['use_unit'].fillna(0) \
-            .subtract(jobs_start.groupby(pd.Grouper(freq='H')).sum()['use_unit'] \
+    # Grouping by second resolution, and resampling for an hour after grouping
+    queued = jobs_submit.groupby(pd.Grouper(freq='S')).sum()['use_unit'].fillna(0) \
+            .subtract(jobs_start.groupby(pd.Grouper(freq='S')).sum()['use_unit'] \
             .fillna(0), fill_value=0).cumsum()
-    running = jobs_start.groupby(pd.Grouper(freq='H')).sum()['use_unit'].fillna(0) \
-            .subtract(jobs_end.groupby(pd.Grouper(freq='H')).sum()['use_unit'] \
+    running = jobs_start.groupby(pd.Grouper(freq='S')).sum()['use_unit'].fillna(0) \
+            .subtract(jobs_end.groupby(pd.Grouper(freq='S')).sum()['use_unit'] \
             .fillna(0), fill_value=0).cumsum()
+    # Resample to hour 
+    queued = queued.resample('H').mean()
+    running = running.resample('H').mean()
 
     baseline = target_series([(d_from, d_to, 0)])
     queued = queued.add(baseline,fill_value=0)
