@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from viewclust.target_series import target_series
 
-def job_use(jobs, d_from, target, d_to='', use_unit='cpu', insta_use=False,
+def job_use(jobs, d_from, target, d_to='', use_unit='cpu', job_state='all',insta_use=False, insta_dur='run',
             serialize_queued='', serialize_running='', serialize_dist=''):
     """Takes a DataFrame full of job information and returns usage based on specified unit.
 
@@ -17,9 +17,15 @@ def job_use(jobs, d_from, target, d_to='', use_unit='cpu', insta_use=False,
     use_unit: str, optional
         Usage unit to examine. One of: {'cpu', 'cpu-eqv', 'gpu', 'gpu-eqv','gpu-eqv-cdr'}.
         Defaults to 'cpu'.
+    job_state: str, optional
+        The job state to include in measurement: {'all','complete', 'running', 'queued'}.
+        Defaults to 'complete'.
     insta_use: boolean, optional
         If true, transforms the data to be as if each job ran instantly.
         Defaults to false.
+    insta_dur: str, optional
+        The job duration used to calculate insta_use One of: {'run', 'req'}.
+        Defaults to 'run'.
     d_from: date str
         Beginning of the query period, e.g. '2019-04-01T00:00:00'.
     target: int-like
@@ -45,16 +51,44 @@ def job_use(jobs, d_from, target, d_to='', use_unit='cpu', insta_use=False,
         Series for delta plots
     """
 
+    # d_to boilerplate
+    # IF D_TO IS EMPTY IT SHOULD BE SET TO LATEST KNOWN STATE CHANGE TIME (SUBMIT,START,END) IN THE JOB RECORDS.
+    if d_to == '':
+        t_max = jobs[['submit','start','end']].max(axis=1)
+        d_to=str(t_max.max())
+
+    if job_state == 'complete':
+        jobs_complete=jobs.copy()
+        jobs_complete=jobs_complete.loc[jobs_complete['end'].notnull()]
+        jobs=jobs_complete.copy()
+
+    elif job_state == 'running':        
+        jobs_running=jobs.copy()
+        jobs_running=jobs_running.loc[jobs_running['state'] == 'RUNNING']
+        jobs=jobs_running.copy()
+
+        jobs['end'] = jobs['start'] + jobs['timelimit']
+
+    elif job_state == 'queued':
+        jobs_queued=jobs.copy()
+        jobs_queued=jobs_queued.loc[jobs_queued['state'] == 'PENDING']
+        jobs=jobs_queued.copy()
+
+        jobs['start'] = jobs['submit']
+        jobs['end'] = pd.to_datetime(d_to) + jobs['timelimit']
+
     # Boilerplate for insta transformation
     if insta_use:
         jobs = jobs.copy() # Just to be safe
-        end = jobs['submit'] + (jobs['end'] - jobs['start'])
-        jobs['start'] = jobs['submit']
-        jobs['end'] = end
+        if insta_dur == 'run':
+            end = jobs['submit'] + (jobs['end'] - jobs['start'])
+            jobs['start'] = jobs['submit']
+            jobs['end'] = end
+        else: #assuming insta_dur = 'req'
+            end = jobs['submit'] + jobs['timelimit']
+            jobs['start'] = jobs['submit']
+            jobs['end'] = end
 
-    # d_to boilerplate
-    if d_to == '':
-        d_to = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
 
     jobs = jobs.sort_values(by=['submit'])
 
@@ -93,12 +127,15 @@ def job_use(jobs, d_from, target, d_to='', use_unit='cpu', insta_use=False,
     jobs_end = jobs.copy()
     jobs_end.index = jobs_end['end']
 
-    queued = jobs_submit.groupby(pd.Grouper(freq='H')).sum()['use_unit'].fillna(0) \
-            .subtract(jobs_start.groupby(pd.Grouper(freq='H')).sum()['use_unit'] \
+    queued = jobs_submit.groupby(pd.Grouper(freq='S')).sum()['use_unit'].fillna(0) \
+            .subtract(jobs_start.groupby(pd.Grouper(freq='S')).sum()['use_unit'] \
             .fillna(0), fill_value=0).cumsum()
-    running = jobs_start.groupby(pd.Grouper(freq='H')).sum()['use_unit'].fillna(0) \
-            .subtract(jobs_end.groupby(pd.Grouper(freq='H')).sum()['use_unit'] \
+    running = jobs_start.groupby(pd.Grouper(freq='S')).sum()['use_unit'].fillna(0) \
+            .subtract(jobs_end.groupby(pd.Grouper(freq='S')).sum()['use_unit'] \
             .fillna(0), fill_value=0).cumsum()
+
+    queued = queued.resample('H').mean()
+    running = running.resample('H').mean()
 
     baseline = target_series([(d_from, d_to, 0)])
     queued = queued.add(baseline,fill_value=0)

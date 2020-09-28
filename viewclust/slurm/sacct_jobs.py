@@ -86,9 +86,6 @@ def sacct_jobs(account_query, d_from, d_to='', debugging=False,
                      .str.replace('-', ' days '))
     job_frame['timelimit'] = pd.to_timedelta(job_frame['timelimit'])
 
-    # Protect end time for jobs that are still currently running
-    job_frame['end'] = job_frame['end'].replace({pd.NaT: pd.to_datetime(d_to)})
-
     # Construct mem column
     job_frame['memHold'] = job_frame['reqmem'].map(lambda x: int(x.lstrip('+-').rstrip('MmNnCc')))
     core_mask = (job_frame['reqmem'].str.contains('c'))
