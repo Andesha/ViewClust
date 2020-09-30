@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 def target_series(time_frames):
     """Takes a list of tuples and builds a target based time series.
 

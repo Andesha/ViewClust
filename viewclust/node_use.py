@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 def node_use(node_states, debugging=False):
     """Calculate node usage statistics based on polling database.
 
@@ -35,8 +36,11 @@ def node_use(node_states, debugging=False):
         weights = group[weight_name]
         return (data * weights).sum() / weights.sum()
 
-    cores_perc = node_states.groupby(pd.Grouper(freq='H')).apply(w_avg, "p_cpu", "t_cpu")
-    mem_perc = node_states.groupby(pd.Grouper(freq='H')).apply(w_avg, "p_mem", "t_cpu")
-    max_perc = node_states.groupby(pd.Grouper(freq='H')).apply(w_avg, "p_max", "t_cpu")
+    cores_perc = node_states.groupby(pd.Grouper(freq='H')).apply(
+        w_avg, "p_cpu", "t_cpu")
+    mem_perc = node_states.groupby(pd.Grouper(freq='H')).apply(
+        w_avg, "p_mem", "t_cpu")
+    max_perc = node_states.groupby(pd.Grouper(freq='H')).apply(
+        w_avg, "p_max", "t_cpu")
 
     return cores_total, cores_perc, mem_perc, max_perc

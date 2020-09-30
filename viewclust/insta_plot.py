@@ -1,23 +1,27 @@
 import plotly.graph_objects as go
 import sys
 
+
 def insta_plot(clust_info, cores_queued, cores_running, resample_str='',
-               fig_out='', y_label='Usage', fig_title='', query_bounds=True, submit_run=[], user_run=[]):
+               fig_out='', y_label='Usage', fig_title='',
+               query_bounds=True, submit_run=[], user_run=[]):
     """Instantaneous usage plot.
 
     This function is deprecated as of v0.3.0.
-    
-    Support continues in the ViewClust-Vis package.
 
+    Support continues in the ViewClust-Vis package.
 
     Parameters
     -------
     clust_info: DataFrame
-        Frame which represents the cluster state at given time intervals. See jobUse.
+        Frame which represents the cluster state at given time intervals.
+        See job_use.
     cores_queued: array_like of DataFrame
-        Series displaying queued resources at a particular time. See jobUse.
+        Series displaying queued resources at a particular time.
+        See job_use.
     cores_running: array_like of DataFrame
-        Series displaying running resources at a particular time. See jobUse.
+        Series displaying running resources at a particular time.
+        See job_use.
     resample_str: pandas freq str, optional
         Defaults to empty, meaning no resampling. Passing this parameter
         does not do sanity checking and will only run the below code example.
@@ -42,7 +46,8 @@ def insta_plot(clust_info, cores_queued, cores_running, resample_str='',
     jobUse: Generates the input frames for this function.
     """
 
-    print('This function is deprecated as of v0.3.0.\nSupport continues in the ViewClust-Vis package.', file=sys.stderr)
+    print('This function is deprecated as of v0.3.0.', file=sys.stderr)
+    print('Support continues in the ViewClust-Vis package.', file=sys.stderr)
 
     # Temp vars so that we aren't touching anything by ref
     clust_info_tmp = clust_info.copy()
@@ -61,18 +66,17 @@ def insta_plot(clust_info, cores_queued, cores_running, resample_str='',
                              name='Allocation',
                              fillcolor='rgba(180, 180, 180, .3)'))
 
-    if len(user_run)>0:
+    if len(user_run) > 0:
         for user in user_run:
             fig.add_trace(go.Scatter(
-            x=user_run.index,y=user_run[user],
-            line=dict(width=0),
-            hoverinfo='x+y',
-            opacity=.1,
-            mode='none',
-            name=user,
-            stackgroup='use' # define stack group
-            ))
-
+                x=user_run.index, y=user_run[user],
+                line=dict(width=0),
+                hoverinfo='x+y',
+                opacity=.1,
+                mode='none',
+                name=user,
+                stackgroup='use'  # define stack group
+                ))
 
     fig.add_trace(go.Scatter(x=cores_queued_tmp.index, y=cores_queued_tmp,
                              mode='lines',
@@ -83,10 +87,11 @@ def insta_plot(clust_info, cores_queued, cores_running, resample_str='',
         if resample_str != '':
             submit_run_tmp = submit_run_tmp.resample(resample_str).sum()
 
-        fig.add_trace(go.Scatter(x=submit_run_tmp.index, y=submit_run_tmp,
-                             	mode='lines',
-                             	name='Resources run at submit',
-                             	marker_color='rgba(220,80,80, .8)'))
+        fig.add_trace(go.Scatter(x=submit_run_tmp.index,
+                                 y=submit_run_tmp,
+                                 mode='lines',
+                                 name='Resources run at submit',
+                                 marker_color='rgba(220,80,80, .8)'))
     fig.add_trace(go.Scatter(x=cores_running_tmp.index, y=cores_running_tmp,
                              mode='lines',
                              name='Resources running',

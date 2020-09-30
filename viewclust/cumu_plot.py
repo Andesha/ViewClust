@@ -2,19 +2,21 @@ import numpy as np
 import plotly.graph_objects as go
 import sys
 
+
 def cumu_plot(clust_info, cores_queued, cores_running, resample_str='',
               fig_out='', query_bounds=True, submit_run=[], user_run=[],
               plot_queued=False):
     """Cumulative usage plot.
 
     This function is deprecated as of v0.3.0.
-    
+
     Support continues in the ViewClust-Vis package.
 
     Parameters
     -------
     clust_info: DataFrame
-        Frame which represents the cluster state at given time intervals. See jobUse.
+        Frame which represents the cluster state at given time intervals.
+        See jobUse.
     cores_queued: array_like of DataFrame
         Series displaying queued resources at a particular time. See jobUse.
     cores_running: array_like of DataFrame
@@ -24,7 +26,7 @@ def cumu_plot(clust_info, cores_queued, cores_running, resample_str='',
         does not do sanity checking and will only run the below code example.
         cores_queued = cores_queued.resample('1D').sum()
     fig_out: str, optional
-        Writes the generated figure to file as the given name. 
+        Writes the generated figure to file as the given name.
         If empty, skips writing. Defaults to empty.
     query_bounds: bool, optional
         Draws red lines on the figure to represent where query is valid.
@@ -34,14 +36,15 @@ def cumu_plot(clust_info, cores_queued, cores_running, resample_str='',
         if jobs had started instantly. Allows for easier interpretation of
         the queued series. Defaults to not plotting.
     plot_queued: bool, optional
-	draw the light blue line indicating the cumulative queued resources.
+        Draw the light blue line indicating the cumulative queued resources.
 
     See Also
     -------
     jobUse: Generates the input frames for this function.
     """
 
-    print('This function is deprecated as of v0.3.0.\nSupport continues in the ViewClust-Vis package.', file=sys.stderr)
+    print('This function is deprecated as of v0.3.0.', file=sys.stderr)
+    print('Support continues in the ViewClust-Vis package.', file=sys.stderr)
 
     # Avoid recalculations via these:
     clust_sum = np.cumsum(clust_info).divide(len(clust_info))
@@ -61,29 +64,31 @@ def cumu_plot(clust_info, cores_queued, cores_running, resample_str='',
                              name='group allocation',
                              fillcolor='rgba(180, 180, 180, .3)'))
 
-    if len(user_run)>0:
+    if len(user_run) > 0:
         for user in user_run:
             fig.add_trace(go.Scatter(
-            x=user_run.index,y=np.cumsum(user_run[user]).divide(len(clust_info)),
-            hoverinfo='x+y',
-            opacity=.1,
-            mode='none',
-            name=user,
-            stackgroup='use' # define stack group
-            ))
+                x=user_run.index,
+                y=np.cumsum(user_run[user]).divide(len(clust_info)),
+                hoverinfo='x+y',
+                opacity=.1,
+                mode='none',
+                name=user,
+                stackgroup='use'  # define stack group
+                ))
 
     if plot_queued:
-	    fig.add_trace(go.Scatter(x=cores_queued.index,
-					y=queue_sum,
-					mode='lines',
-					name='Resources queued',
-					marker_color='rgba(160,160,220, .8)'))
+        fig.add_trace(go.Scatter(x=cores_queued.index,
+                                 y=queue_sum,
+                                 mode='lines',
+                                 name='Resources queued',
+                                 marker_color='rgba(160,160,220, .8)'))
     if len(submit_run) > 0:
-	    fig.add_trace(go.Scatter(x=submit_run.index,
-                             	y=np.cumsum(submit_run).divide(len(clust_info)),
-                             	mode='lines',
-                             	name='Resources run at submit',
-                             	marker_color='rgba(220,160,160, .8)'))
+        fig.add_trace(go.Scatter(x=submit_run.index,
+                                 y=np.cumsum(submit_run).divide(
+                                     len(clust_info)),
+                                 mode='lines',
+                                 name='Resources run at submit',
+                                 marker_color='rgba(220,160,160, .8)'))
     fig.add_trace(go.Scatter(x=cores_running.index,
                              y=run_sum,
                              mode='lines',
