@@ -134,3 +134,5 @@ def mem_info(d_from, account, fig_out='', debugging=False):
             )
 
         fig.write_html(fig_out)
+
+    return fig
