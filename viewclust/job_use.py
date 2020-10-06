@@ -5,7 +5,7 @@ from viewclust.target_series import target_series
 
 
 def job_use(jobs, d_from, target, d_to='', use_unit='cpu', job_state='all',
-            time_ref='', serialize_queued='', serialize_running='',
+            time_ref='', grouper_interval='S', usage_interval='H', serialize_queued='', serialize_running='',
             serialize_dist=''):
     """Takes a DataFrame full of job information and
        returns usage based on specified unit.
@@ -40,6 +40,15 @@ def job_use(jobs, d_from, target, d_to='', use_unit='cpu', job_state='all',
     d_to: date str, optional
         End of the query period, e.g. '2020-01-01T00:00:00'.
         Defaults to now if empty.
+    grouper_interval: str, optional
+        The interval by which to calculate the start and end time cumulative sum difference.
+        start and end steps within this interval will be ignored. Job record times occur at
+        the second interval:
+            {'S','min', 'H'}. 
+    usage_interval: str, optional
+        The interval by which to store the usage series.
+        Job record times occur at the second interval:
+            {'S','min', 'H'}. 
     debugging: boolean, optional
         Boolean for reporting progress to stdout. Default False.
     serialize_running, serialize_queued, serialize_dist: str, optional
@@ -144,15 +153,15 @@ def job_use(jobs, d_from, target, d_to='', use_unit='cpu', job_state='all',
     jobs_end.index = jobs_end['end']
 
     # Grouping by second resolution, and resampling for an hour after grouping
-    queued = jobs_submit.groupby(pd.Grouper(freq='S')).sum()[
+    queued = jobs_submit.groupby(pd.Grouper(freq=grouper_interval)).sum()[
         'use_unit'].fillna(0).subtract(jobs_start.groupby(pd.Grouper(
-            freq='S')).sum()['use_unit'].fillna(0), fill_value=0).cumsum()
-    running = jobs_start.groupby(pd.Grouper(freq='S')).sum()[
+            freq=grouper_interval)).sum()['use_unit'].fillna(0), fill_value=0).cumsum()
+    running = jobs_start.groupby(pd.Grouper(freq=grouper_interval)).sum()[
         'use_unit'].fillna(0).subtract(jobs_end.groupby(pd.Grouper(
-            freq='S')).sum()['use_unit'].fillna(0), fill_value=0).cumsum()
+            freq=grouper_interval)).sum()['use_unit'].fillna(0), fill_value=0).cumsum()
     # Resample to hour
-    queued = queued.resample('H').mean()
-    running = running.resample('H').mean()
+    queued = queued.resample(usage_interval).mean()
+    running = running.resample(usage_interval).mean()
 
     baseline = target_series([(d_from, d_to, 0)])
     queued = queued.add(baseline, fill_value=0)
