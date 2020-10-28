@@ -2,6 +2,16 @@
 History
 =======
 
+0.5.0 (2020-10-28)
+------------------
+
+* Code linting fixes
+* Revert modern plotting features and added to ViewClust-Vis
+* Job use now calculates more theoretical lines
+* Added return handles for figures that were missing them
+* Added parameter for groupby frequency inside of job use
+
+
 0.4.5 (2020-09-15)
 ------------------
 
