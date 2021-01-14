@@ -48,6 +48,8 @@ def get_users_run(jobs, d_from, target, d_to='', use_unit='cpu',
         _, user_queued, user_running, _ = job_use(user_jobs, d_from,
                                                   target, d_to=d_to,
                                                   use_unit=use_unit)
+        user_queued=user_queued[d_from:d_to]
+        user_running=user_running[d_from:d_to]
 
         if user_count == 0:
             user_running_cat = pd.Series(user_running,

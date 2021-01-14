@@ -27,8 +27,9 @@ def job_use(jobs, d_from, target, d_to='', use_unit='cpu', job_state='all',
         Defaults to 'complete'.
     time_ref: str, one of: {sub, req, sub+req}
         sub: Jobs run as if they ran at submit time.
-        req: Jobs run their full execution time at normal start time.
-        sub+req: Jobs run their full execution time from their submit time.
+        req: Jobs run their full requested time from their start time.
+        sub+req: Jobs run their full requested time from their submit time.
+        horizon+req: Jobs run their full requested time from the horizon (e.g. d_to). 
     insta_dur: str, optional
         The job duration used to calculate time_ref One of: {'run', 'req'}.
         Defaults to 'run'.
@@ -102,10 +103,14 @@ def job_use(jobs, d_from, target, d_to='', use_unit='cpu', job_state='all',
             jobs['start'] = jobs['submit']
             jobs['end'] = end
         elif time_ref == 'req':
-            jobs['end'] = (jobs['submit'] + jobs['timelimit'])
+            jobs['end'] = (jobs['start'] + jobs['timelimit'])
         elif time_ref == 'sub+req':
             end = jobs['submit'] + jobs['timelimit']
             jobs['start'] = jobs['submit']
+            jobs['end'] = end
+        elif time_ref == 'horizon+req':
+            end =  pd.to_datetime(d_to) + jobs['timelimit']
+            jobs['start'] =  jobs['submit']
             jobs['end'] = end
 
     jobs = jobs.sort_values(by=['submit'])
@@ -162,6 +167,9 @@ def job_use(jobs, d_from, target, d_to='', use_unit='cpu', job_state='all',
     # Resample to hour
     queued = queued.resample(usage_interval).mean()
     running = running.resample(usage_interval).mean()
+
+    # the following shold only impact horizon measures by foward filling None's
+    running = running.fillna(method='ffill')
 
     baseline = target_series([(d_from, d_to, 0)])
     queued = queued.add(baseline, fill_value=0)

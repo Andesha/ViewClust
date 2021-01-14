@@ -3,8 +3,8 @@ import sys
 
 
 def insta_plot(clust_info, cores_queued, cores_running, resample_str='',
-               fig_out='', y_label='Usage', fig_title='',
-               query_bounds=True, submit_run=[], user_run=[]):
+               fig_out='', y_label='Usage', fig_title='', query_bounds=True, 
+		running=[], queued=[], submit_run=[], submit_req=[], user_run=[]):
     """Instantaneous usage plot.
 
     This function is deprecated as of v0.3.0.
@@ -36,9 +36,17 @@ def insta_plot(clust_info, cores_queued, cores_running, resample_str='',
     query_bounds: bool, optional
         Draws red lines on the figure to represent where query is valid.
         Defaults to true.
+    running: DataFrame, optional
+        Draws a green line representing the usage of jobs currently in RUNNING state if they run for the requested duration.
+    queued: DataFrame, optional
+        Draws a gray line representing the usage of jobs currently in PENDING state if they were to start at query time and run for their requested duration.
     submit_run: DataFrame, optional
         Draws a red line representing what would usage have looked like
-        if jobs had started instantly. Allows for easier interpretation of
+        if jobs had started instantly and ran for their elapsed duration. Allows for easier interpretation of
+        the queued series. Defaults to not plotting.
+    submit_req: DataFrame, optional
+        Draws an orange line representing what usage would have looked like
+        if jobs had started instantly and ran for their requested duration. Allows for easier interpretation of
         the queued series. Defaults to not plotting.
 
     See Also
@@ -82,6 +90,26 @@ def insta_plot(clust_info, cores_queued, cores_running, resample_str='',
                              mode='lines',
                              name='Resources queued',
                              marker_color='rgba(160,160,220, .8)'))
+    if len(running) > 0:
+        running_tmp = running.copy()
+        if resample_str != '':
+            running_tmp = running_tmp.resample(resample_str).sum()
+
+        fig.add_trace(go.Scatter(x=running_tmp.index, y=running_tmp,
+                             	mode='lines',
+                             	name='Resources running',
+                             	marker_color='rgba(80,240,80, .8)'))
+
+    if len(queued) > 0:
+        queued_tmp = queued.copy()
+        if resample_str != '':
+            queued_tmp = queued_tmp.resample(resample_str).sum()
+
+        fig.add_trace(go.Scatter(x=queued_tmp.index, y=queued_tmp,
+                             	mode='lines',
+                             	name='Resources queued',
+                             	marker_color='rgba(80,80,80, .8)'))
+
     if len(submit_run) > 0:
         submit_run_tmp = submit_run.copy()
         if resample_str != '':
@@ -90,8 +118,19 @@ def insta_plot(clust_info, cores_queued, cores_running, resample_str='',
         fig.add_trace(go.Scatter(x=submit_run_tmp.index,
                                  y=submit_run_tmp,
                                  mode='lines',
-                                 name='Resources run at submit',
+                                 name='Resources run at submit (elapsed)',
                                  marker_color='rgba(220,80,80, .8)'))
+
+    if len(submit_req) > 0:
+        submit_req_tmp = submit_req.copy()
+        if resample_str != '':
+            submit_req_tmp = submit_req_tmp.resample(resample_str).sum()
+
+        fig.add_trace(go.Scatter(x=submit_req_tmp.index, y=submit_req_tmp,
+                             	mode='lines',
+                             	name='Resources run at submit (timelimit)',
+                             	marker_color='rgba(220,160,00, .8)'))
+
     fig.add_trace(go.Scatter(x=cores_running_tmp.index, y=cores_running_tmp,
                              mode='lines',
                              name='Resources running',
