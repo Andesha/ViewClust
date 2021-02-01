@@ -88,7 +88,7 @@ def sacct_jobs(account_query, d_from, d_to='', debugging=False,
     # Fix jobs with day limits and convert to timedelta
     job_frame.update(job_frame.timelimit.loc[lambda x: x.str.contains('-')]
                      .str.replace('-', ' days '))
-    job_frame['timelimit'] = pd.to_timedelta(job_frame['timelimit'])
+    job_frame['timelimit'] = pd.to_timedelta(job_frame['timelimit'], errors='coerce')
 
     # Construct mem column
     job_frame['memHold'] = job_frame['reqmem'].map(
