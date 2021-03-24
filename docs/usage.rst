@@ -6,13 +6,19 @@ To use ViewClust in a project::
 
     import viewclust
 
-Or use an alias::
+All following examples are using ``vc`` as an alias::
 
     import viewclust as vc
 
-Functions can then be called as expected via::
+Functions can then be called with ``vc``::
 
-    vc.job_use(jobs)
+    vc.job_use(jobs, d_from, target)
+
+ViewClust has the following collection of functions::
+
+* ``get_users_run``
+* ``job_use``
+* ``node_use``
 
 Generating Job Stack Plots
 ########
