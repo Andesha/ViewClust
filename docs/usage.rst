@@ -14,11 +14,11 @@ Functions can then be called with ``vc``::
 
     vc.job_use(jobs, d_from, target)
 
-ViewClust has the following collection of functions::
+ViewClust has the following collection of functions:
 
-* get_users_run
-* job_use
-* node_use
+* ``get_users_run`` (see `docstring <https://github.com/Andesha/ViewClust/blob/master/viewclust/get_users_run.py>`_)
+* ``job_use`` (see `docstring <https://github.com/Andesha/ViewClust/blob/master/viewclust/job_use.py>`_)
+* ``node_use`` (see `docstring <https://github.com/Andesha/ViewClust/blob/master/viewclust/node_use.py>`_)
 
 Generating Job Stack Plots
 ########
