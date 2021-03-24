@@ -16,9 +16,9 @@ Functions can then be called with ``vc``::
 
 ViewClust has the following collection of functions::
 
-* ``get_users_run``
-* ``job_use``
-* ``node_use``
+* get_users_run
+* job_use
+* node_use
 
 Generating Job Stack Plots
 ########
