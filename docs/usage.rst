@@ -2,23 +2,34 @@
 Usage
 =====
 
-To use ViewClust in a project::
+To use **ViewClust** in a project::
 
     import viewclust
 
-All following examples are using ``vc`` as an alias::
+* All following examples are using ``vc`` as an alias::
 
     import viewclust as vc
 
-Functions can then be called with ``vc``::
+* Functions can then be called with ``vc``::
 
     vc.job_use(jobs, d_from, target)
+
+To use the **ViewClust/Slurm** `sub-module <https://github.com/Andesha/ViewClust/tree/master/viewclust/slurm>`_::
+
+    from viewclust import slurm
+
+* Functions can then be called with ``slurm``::
+
+    slurm.sacct_jobs(account, d_from, d_to=d_to)
 
 ViewClust has the following collection of functions:
 
 * ``get_users_run`` (see `docstring <https://github.com/Andesha/ViewClust/blob/master/viewclust/get_users_run.py>`_)
 * ``job_use`` (see `docstring <https://github.com/Andesha/ViewClust/blob/master/viewclust/job_use.py>`_)
 * ``node_use`` (see `docstring <https://github.com/Andesha/ViewClust/blob/master/viewclust/node_use.py>`_)
+* ``slurm.mem_info`` (see `docstring <https://github.com/Andesha/ViewClust/blob/master/viewclust/slurm/mem_info.py>`_)
+* ``slurm.sacct_jobs`` (see `docstring <https://github.com/Andesha/ViewClust/blob/master/viewclust/slurm/sacct_jobs.py>`_)
+
 
 Generating Job Stack Plots
 ########
