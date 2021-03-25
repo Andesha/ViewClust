@@ -31,31 +31,45 @@ ViewClust has the following collection of functions:
 * ``slurm.sacct_jobs`` (see `docstring <https://github.com/Andesha/ViewClust/blob/master/viewclust/slurm/sacct_jobs.py>`_)
 
 
-Generating Job Stack Plots
+Investigating Core-year Usage
 ########
 
-To view an insta plot for an account group the following pattern can be used::
+The following pattern can be used to process jobs dataframes and get instantaneous core-year usage::
 
     import viewclust as vc
     from viewclust import slurm
 
     # Query parameters
-    d_from = '2020-01-01T00:00:00'
-    d_to = '2020-02-02T00:00:00'
     account = 'def-tk11br_cpu'
+    d_from = '2021-02-14T00:00:00'
+    d_to = '2021-03-16T00:00:00'
 
-    # More parameters and default arguments explored in docstrings
-    job_frame = slurm.sacct_jobs(account, d_from, d_to=d_to)
-    clust_target, queued, running, dist = vc.job_use(job_frame, d_from, target, d_to=d_to, use_unit='cpu-eqv')
-    insta_plot(clust_target, queued, running, fig_out=account+'.html'):
+    # DataFrame query
+    jobs_df = slurm.sacct_jobs(account, d_from, d_to=d_to)
+
+    # ViewClust processing
+    target = 50
+    clust_target, queued, running, dist = vc.job_use(jobs_df, d_from, target, d_to=d_to, use_unit='cpu-eqv')
 
 Things to note about this example:
 
 * The functions use optional arguments. Docstrings are supported in all cases.
-* To generate the input job frame, we are using an included slurm helper function
-* Input frames can be anything as long as they are dataframes with the expected columns.
-* This means that CCMNT data will work natively
-* The computation for this figure can take a long time if your query period is large!
+* To generate the input jobs dataframe, we are using an included ``slurm`` helper function.
+
+  * The main job query from Slurm can take a long time if your query period is large!
+
+* Input frames can be anything as long as they are dataframes with the expected columns:
+
+  * ``submit`` (``datetime64[ns]``): submit time
+  * ``start`` (``datetime64[ns]``): start time
+  * ``end`` (``datetime64[ns]``): end time
+  * ``state`` (String or ``object``): job state
+  * ``timelimit`` (``timedelta64[ns]``): reserved run time
+  * ``reqcpus`` (``int64``): total number of CPU cores
+  * ``mem`` (``int64``): total reserved memory
+  * ``reqtres`` (String or ``object``): all requested resources, including GPUs
+
+* A plot can be generated with `ViewClust-Vis <https://viewclust-vis.readthedocs.io/en/latest/usage.html>`_
 
 Investigating Memory Usage
 ########
