@@ -2,6 +2,6 @@
 Figures
 =====
 
-This page will provide samples for each figure type and explain how they are to be read.
+Functions ``cumu_plot`` and ``insta_plot`` are deprecated as of v0.3.0. Their support continues in the `ViewClust-Vis package`_ which contains additional visualization functions.
 
-These explanations can be used to forward to users if needed.
+.. _ViewClust-Vis package: https://viewclust-vis.readthedocs.io/
