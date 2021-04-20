@@ -155,7 +155,7 @@ def job_use(jobs, d_from, target, d_to='', use_unit='cpu', job_state='all',
     jobs_start  = jobs[['start', 'use_unit']].set_index('start')
     jobs_end    = jobs[['end',   'use_unit']].set_index('end')
 
-    # Calculate instantenious usage
+    # Calculate instantaneous usage
     running_start = jobs_start.groupby( pd.Grouper(freq=grouper_interval) )['use_unit'].sum().fillna(0)
     running_end   =   jobs_end.groupby( pd.Grouper(freq=grouper_interval) )['use_unit'].sum().fillna(0)
     running  = running_start.subtract( running_end, fill_value=0 ).cumsum()
