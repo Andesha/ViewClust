@@ -155,16 +155,18 @@ def job_use(jobs, d_from, target, d_to='', use_unit='cpu', job_state='all',
     jobs_start  = jobs[['start', 'use_unit']].set_index('start')
     jobs_end    = jobs[['end',   'use_unit']].set_index('end')
 
-    # Grouping by second resolution, and resampling for an hour after grouping
-    queued = jobs_submit.groupby(pd.Grouper(freq=grouper_interval)).sum()[
-        'use_unit'].fillna(0).subtract(jobs_start.groupby(pd.Grouper(
-            freq=grouper_interval)).sum()['use_unit'].fillna(0), fill_value=0).cumsum()
-    running = jobs_start.groupby(pd.Grouper(freq=grouper_interval)).sum()[
-        'use_unit'].fillna(0).subtract(jobs_end.groupby(pd.Grouper(
-            freq=grouper_interval)).sum()['use_unit'].fillna(0), fill_value=0).cumsum()
-    # Resample to hour
-    queued = queued.resample(usage_interval).mean()
-    running = running.resample(usage_interval).mean()
+    # Calculate instantenious usage
+    running_start = jobs_start.groupby( pd.Grouper(freq=grouper_interval) )['use_unit'].sum().fillna(0)
+    running_end   =   jobs_end.groupby( pd.Grouper(freq=grouper_interval) )['use_unit'].sum().fillna(0)
+    running  = running_start.subtract( running_end, fill_value=0 ).cumsum()
+
+    queued_submit = jobs_submit.groupby( pd.Grouper(freq=grouper_interval))['use_unit'].sum().fillna(0)
+    queued_start  =  jobs_start.groupby( pd.Grouper(freq=grouper_interval))['use_unit'].sum().fillna(0)
+    queued  = queued_submit.subtract( queued_start, fill_value=0).cumsum()
+
+    # Resample by the hour
+    running = running.resample( usage_interval ).mean()
+    queued  =  queued.resample( usage_interval ).mean()
 
     # the following shold only impact horizon measures by foward filling None's
     running = running.fillna(method='ffill')
