@@ -122,7 +122,7 @@ def job_use(jobs, d_from, target, d_to='', use_unit='cpu', job_state='all',
         jobs['use_unit'] = jobs[['mem_scale', 'reqcpus']].max(axis=1)
     elif 'gpu' in use_unit:
         jobs['ngpus'] = jobs['reqtres'].str.extract(
-            r'gpu=(\d+)').astype('float')
+            r'gpu=(\d+)').fillna(0).astype('int64')
         if use_unit == 'gpu':
             jobs['use_unit'] = jobs['ngpus']
         elif use_unit == 'gpu-eqv':
@@ -142,7 +142,7 @@ def job_use(jobs, d_from, target, d_to='', use_unit='cpu', job_state='all',
             raise AttributeError('invalid GPU use_unit')
     elif use_unit == 'billing':
         jobs['billing'] = jobs['reqtres'].str.extract(
-            r'billing=(\d+)').astype('float')
+            r'billing=(\d+)').fillna(0).astype('int64')
         if jobs['billing'].isnull().any():
             raise AttributeError('There is no "billing" string in the reqtres')
         else:
@@ -150,12 +150,10 @@ def job_use(jobs, d_from, target, d_to='', use_unit='cpu', job_state='all',
     else:
         raise AttributeError('invalid use_unit')
 
-    jobs_submit = jobs.copy()
-    jobs_submit.index = jobs_submit['submit']
-    jobs_start = jobs.copy()
-    jobs_start.index = jobs_start['start']
-    jobs_end = jobs.copy()
-    jobs_end.index = jobs_end['end']
+    # Prepare dataframes for resampling
+    jobs_submit = jobs[['submit','use_unit']].set_index('submit')
+    jobs_start  = jobs[['start', 'use_unit']].set_index('start')
+    jobs_end    = jobs[['end',   'use_unit']].set_index('end')
 
     # Grouping by second resolution, and resampling for an hour after grouping
     queued = jobs_submit.groupby(pd.Grouper(freq=grouper_interval)).sum()[

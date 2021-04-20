@@ -40,11 +40,11 @@ def target_series(time_frames):
     series_list = []
     for period in time_frames:
         query_period = pd.date_range(start=period[0], end=period[1], freq='H')
-        new_series = pd.Series(index=query_period)
+        new_series = pd.Series(index=query_period, dtype='float64')
         new_series = new_series.fillna(pd.to_numeric(period[2]))
         series_list.append(new_series)
 
-    tar_frame = pd.Series()
+    tar_frame = pd.Series( dtype='object' )
     for period in series_list:
         tar_frame = tar_frame.append(period)
 
