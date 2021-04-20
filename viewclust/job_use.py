@@ -122,7 +122,7 @@ def job_use(jobs, d_from, target, d_to='', use_unit='cpu', job_state='all',
         jobs['use_unit'] = jobs[['mem_scale', 'reqcpus']].max(axis=1)
     elif 'gpu' in use_unit:
         jobs['ngpus'] = jobs['reqtres'].str.extract(
-            r'gpu=(\d+)').astype('float')
+            r'gpu=(\d+)').fillna(0).astype('int64')
         if use_unit == 'gpu':
             jobs['use_unit'] = jobs['ngpus']
         elif use_unit == 'gpu-eqv':
@@ -142,7 +142,7 @@ def job_use(jobs, d_from, target, d_to='', use_unit='cpu', job_state='all',
             raise AttributeError('invalid GPU use_unit')
     elif use_unit == 'billing':
         jobs['billing'] = jobs['reqtres'].str.extract(
-            r'billing=(\d+)').astype('float')
+            r'billing=(\d+)').fillna(0).astype('int64')
         if jobs['billing'].isnull().any():
             raise AttributeError('There is no "billing" string in the reqtres')
         else:
