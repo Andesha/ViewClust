@@ -150,12 +150,10 @@ def job_use(jobs, d_from, target, d_to='', use_unit='cpu', job_state='all',
     else:
         raise AttributeError('invalid use_unit')
 
-    jobs_submit = jobs.copy()
-    jobs_submit.index = jobs_submit['submit']
-    jobs_start = jobs.copy()
-    jobs_start.index = jobs_start['start']
-    jobs_end = jobs.copy()
-    jobs_end.index = jobs_end['end']
+    # Prepare dataframes for resampling
+    jobs_submit = jobs[['submit','use_unit']].set_index('submit')
+    jobs_start  = jobs[['start', 'use_unit']].set_index('start')
+    jobs_end    = jobs[['end',   'use_unit']].set_index('end')
 
     # Grouping by second resolution, and resampling for an hour after grouping
     queued = jobs_submit.groupby(pd.Grouper(freq=grouper_interval)).sum()[
