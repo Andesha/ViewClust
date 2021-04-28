@@ -167,8 +167,9 @@ def job_use(jobs, d_from, target, d_to='', use_unit='cpu', job_state='all',
     running = running.resample( usage_interval ).mean()
     queued  =  queued.resample( usage_interval ).mean()
 
-    # the following shold only impact horizon measures by foward filling None's
+    # Fill values for sparse job records. The resampling above will result in NaNs
     running = running.fillna(method='ffill')
+    queued  =  queued.fillna(method='ffill')
 
     baseline = target_series([(d_from, d_to, 0)])
     queued = queued.add(baseline, fill_value=0)
