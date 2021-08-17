@@ -9,9 +9,9 @@ idna==3.2
 importlib-metadata==4.6.4
 jeepney==0.7.1
 keyring==23.1.0
-numpy==1.21.2
+numpy==1.21.0
 packaging==21.0
-pandas==1.3.2
+pandas==1.3.0
 pkginfo==1.7.1
 plotille==3.8.0
 plotly==5.2.1
