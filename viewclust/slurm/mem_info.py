@@ -6,6 +6,8 @@ import plotly.graph_objects as go
 def mem_info(d_from, account, fig_out='', debugging=False):
     """Script for profiling the memory usage of an account via sacct.
 
+    DEPRECATION WARNING.
+
     Always outputs various statistical measures to stdout, but can
     also plot information.
 
