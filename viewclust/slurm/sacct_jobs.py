@@ -1,6 +1,15 @@
+from io import StringIO
 import subprocess
 import pandas as pd
 import os
+
+# Time columns in job records
+# If we exclude PENDING jobs (that we do in slurm_raw_processing), all time columns should have a time stamp,
+# except RUNNING jobs that do not have the 'End' stamp.
+time_columns = ['Eligible','Submit','Start','End']
+
+# Define what constitutes a duplicate job
+duplicate_job_def = ['JobID','Submit','Start']
 
 
 def sacct_jobs(account_query, d_from, d_to='', debugging=False,
@@ -29,7 +38,7 @@ def sacct_jobs(account_query, d_from, d_to='', debugging=False,
         jobs are found.
     """
 
-    raw_frame = _get_slurm_records(d_from)
+    raw_frame = _get_slurm_records(pd.to_datetime(d_from))
     out_frame = _slurm_raw_processing(raw_frame)
     return _slurm_consistency_check(out_frame) if debugging else out_frame
 
@@ -59,17 +68,19 @@ def _get_slurm_records(arg, ssh_client=None):
         # Get a list of jobs in a date range
         # Note that --start selects jobs in ANY state after the specified time.
         # This is not the same as filtering by 'Start' afterwards.
-        command = f'{sacct_command} {sacct_options} --start {arg:%Y-%m-%dT%H:%M} --end Now'
+        command = f'{sacct_command} {sacct_options} --start {arg:%Y-%m-%dT%H:%M} --end Now\n'
     else:
         print('Unexpected input parameter to get_slurm_records().')
         return pd.DataFrame()
 
     if command:
-        source = subprocess.check_output(command).decode('UTF-8')
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        stdout, stderr = process.communicate()
+        source = stdout.decode('UTF-8')
 
     try:
-        records = pd.read_csv(source, sep=';', dtype='str', on_bad_lines='skip')
-    except:  # TODO: Fix this to be less heavy handed
+        records = pd.read_csv(StringIO(source), sep=';', dtype='str', on_bad_lines='skip')
+    except e:  # TODO: Fix this to be less heavy handed
         return pd.DataFrame()
 
     return pd.DataFrame() if records.empty else records
