@@ -13,7 +13,7 @@ duplicate_job_def = ['JobID','Submit','Start']
 
 
 def sacct_jobs(account_query, d_from, d_to='', debugging=False,
-               serialize_frame=''):
+               serialize_frame='', slurm_names=False):
     """Ingest job record information from slurm via sacct and return DataFrame.
 
     Parameters
@@ -30,6 +30,9 @@ def sacct_jobs(account_query, d_from, d_to='', debugging=False,
     serialize_frame: str, optional
         Pickle the resulting DataFrame.
         If empty, pickling is skipped. Defaults to the empty string.
+    slurm_names: str, optional
+        Keep slurm's sacct column names instead of shorthands.
+        Defaults to False.
 
     Returns
     -------
@@ -39,7 +42,7 @@ def sacct_jobs(account_query, d_from, d_to='', debugging=False,
     """
 
     raw_frame = _get_slurm_records(pd.to_datetime(d_from))
-    out_frame = _slurm_raw_processing(raw_frame)
+    out_frame = _slurm_raw_processing(raw_frame, slurm_names)
     return _slurm_consistency_check(out_frame) if debugging else out_frame
 
 
@@ -86,7 +89,7 @@ def _get_slurm_records(arg, ssh_client=None):
     return pd.DataFrame() if records.empty else records
 
 
-def _slurm_raw_processing(records):
+def _slurm_raw_processing(records, slurm_names):
 
     check = records.duplicated( keep=False )
     if check.any():
@@ -127,6 +130,14 @@ def _slurm_raw_processing(records):
     records['NGPUS'] = records['AllocTRES'].str.extract('gpu=(\d+)',expand=False)
     records['NGPUS'] = pd.to_numeric( records['NGPUS'], errors='coerce' ).fillna(0).astype('Int64')
     records['GPUTime'] = records['NGPUS']*records['Elapsed']
+
+    if not slurm_names:
+        old_fields = ['jobid', 'user', 'account', 'submit', 'start', 'end', 'ncpus', 'nnodes',
+        'reqmem', 'timelimit', 'state', 'reqtres', 'reqtres', 'priority',
+        'partition', 'reqcpus', 'mem', 'ngpus']
+
+        records.columns = records.columns.str.lower()
+        records = records.drop(records.columns.difference(old_fields), 1)
 
     return records
 
