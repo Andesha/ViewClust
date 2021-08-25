@@ -43,7 +43,8 @@ def sacct_jobs(account_query, d_from, d_to='', debugging=False,
 
     raw_frame = _get_slurm_records(pd.to_datetime(d_from))
     out_frame = _slurm_raw_processing(raw_frame, slurm_names)
-    return _slurm_consistency_check(out_frame) if debugging else out_frame
+    # return _slurm_consistency_check(out_frame) if debugging else out_frame
+    return out_frame
 
 
 def _get_slurm_records(arg, ssh_client=None):
