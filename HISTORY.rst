@@ -2,6 +2,12 @@
 History
 =======
 
+0.7.0 (2021-09-02)
+------------------
+
+* Refactor/add new sacct polling script to be much more robust
+
+
 0.6.1 (2021-07-20)
 ------------------
 
