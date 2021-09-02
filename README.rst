@@ -41,7 +41,6 @@ Credits
 * `James Desjardins`_
 * `Sergiy Khan`_
 * `Pier-Luc St-Onge`_
-* `James Desjardins`_
 * `Jose Sergio Hleap`_
 * `Chris Want`_
 
