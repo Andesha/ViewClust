@@ -2,6 +2,12 @@
 History
 =======
 
+0.7.1 (2021-09-03)
+------------------
+
+* Reimplement serialization of sacct frames
+
+
 0.7.0 (2021-09-02)
 ------------------
 
