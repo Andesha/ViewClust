@@ -137,7 +137,7 @@ def _slurm_raw_processing(records, slurm_names):
     if not slurm_names:
         old_fields = ['jobid', 'user', 'account', 'submit', 'start', 'end', 'ncpus', 'nnodes',
         'reqmem', 'timelimit', 'state', 'reqtres', 'reqtres', 'priority',
-        'partition', 'reqcpus', 'mem', 'ngpus']
+        'partition', 'reqcpus', 'mem', 'ngpus', 'alloctres']
 
         records.columns = records.columns.str.lower()
         records = records.drop(records.columns.difference(old_fields), 1)
