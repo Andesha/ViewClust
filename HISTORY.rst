@@ -2,6 +2,13 @@
 History
 =======
 
+0.7.3 (2021-09-07)
+------------------
+
+* Fix end time sacct bug
+* Specify protocol for pickle output format
+
+
 0.7.2 (2021-09-03)
 ------------------
 

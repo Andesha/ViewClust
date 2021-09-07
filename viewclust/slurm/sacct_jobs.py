@@ -43,9 +43,15 @@ def sacct_jobs(account_query, d_from, d_to='', debugging=False,
 
     raw_frame = _get_slurm_records(pd.to_datetime(d_from))
     out_frame = _slurm_raw_processing(raw_frame, slurm_names)
+
+    # Legacy/consistency check:
+    # Protect end time for jobs that are still currently running
+    out_frame['end'] = out_frame['end'].replace({pd.NaT: pd.to_datetime(d_to)})
+
     # return _slurm_consistency_check(out_frame) if debugging else out_frame
+    # TODO: consisder swapping this to a better format
     if serialize_frame != '':
-        out_frame.to_pickle(serialize_frame)
+        out_frame.to_pickle(serialize_frame, protocol=4)
     return out_frame
 
 
