@@ -25,11 +25,12 @@ def job_use(jobs, d_from, target, d_to='', use_unit='cpu', job_state='all',
         The job state to include in measurement:
             {'all','complete', 'running', 'queued'}.
         Defaults to 'complete'.
-    time_ref: str, one of: {sub, req, sub+req}
+    time_ref: str, one of: {sub, req, sub+req, eligible}
         sub: Jobs run as if they ran at submit time.
         req: Jobs run their full requested time from their start time.
         sub+req: Jobs run their full requested time from their submit time.
-        horizon+req: Jobs run their full requested time from the horizon (e.g. d_to). 
+        horizon+req: Jobs run their full requested time from the horizon (e.g. d_to).
+        eligible: queued resources based on eligible time. 
     insta_dur: str, optional
         The job duration used to calculate time_ref One of: {'run', 'req'}.
         Defaults to 'run'.
@@ -74,7 +75,7 @@ def job_use(jobs, d_from, target, d_to='', use_unit='cpu', job_state='all',
     # IF D_TO IS EMPTY IT SHOULD BE SET TO LATEST KNOWN STATE
     # CHANGE TIME (SUBMIT,START,END) IN THE JOB RECORDS.
     if d_to == '':
-        t_max = jobs[['submit', 'start', 'end']].max(axis=1)
+        t_max = jobs[['submit', 'start', 'end', 'eligible']].max(axis=1)
         d_to = str(t_max.max())
 
     # Filter on job state. Different from reason so it is safe.
@@ -112,6 +113,9 @@ def job_use(jobs, d_from, target, d_to='', use_unit='cpu', job_state='all',
             end =  pd.to_datetime(d_to) + jobs['timelimit']
             jobs['start'] =  jobs['submit']
             jobs['end'] = end
+        elif time_ref == 'eligible':
+            jobs['submit'] = jobs[['submit','eligible']].max(axis=1)
+            #jobs['submit'] = jobs['eligible']
 
     jobs = jobs.sort_values(by=['submit'])
 
