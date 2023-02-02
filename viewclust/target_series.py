@@ -46,7 +46,8 @@ def target_series(time_frames):
 
     tar_frame = pd.Series( dtype='object' )
     for period in series_list:
-        tar_frame = tar_frame.append(period)
+        tar_frame = pd.concat([tar_frame,period])
+        #tar_frame = tar_frame.append(period)
 
     # Avoid overlapping by keeping first
     tar_frame = tar_frame.groupby(tar_frame.index).first()
