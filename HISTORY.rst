@@ -2,6 +2,13 @@
 History
 =======
 
+0.8.0 (2023-02-02)
+------------------
+
+* Add eligible queued metric
+* Bump internal package versions
+
+
 0.7.3 (2021-09-07)
 ------------------
 
